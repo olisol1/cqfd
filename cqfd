@@ -345,10 +345,33 @@ EOF
 	echo $tmpfile
 }
 
+# locate_project_dir() - locate .cqfdrc directory upwards
+# The directory will be printed on stdout, if found.
+locate_project_dir() {
+	local search_dir="$PWD"
+
+	while [ "$search_dir" != "/" ]; do
+		if [ -e "$search_dir"/$cqfdrc ]; then
+			echo "$search_dir"
+			return 0
+		fi
+		search_dir="$(readlink -f "$search_dir"/..)"
+	done
+
+	return 1
+}
+
 # config_load() - load build settings from cqfdrc
 # $1: optional "flavor" of the build, is a suffix of command.
 config_load() {
-	IFS="$IFS" parse_ini_config_file "$cqfdrc"
+	local project_dir
+
+	project_dir="$(locate_project_dir)"
+	if [ -z "$project_dir" ] || [ ! -d "$project_dir" ]; then
+		die "no $cqfdrc found in current directory tree"
+	fi
+
+	IFS="$IFS" parse_ini_config_file "$project_dir"/"$cqfdrc"
 
 	cfg.section.project # load the [project] section
 	project_org="$org"

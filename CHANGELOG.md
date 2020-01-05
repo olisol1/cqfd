@@ -1,5 +1,7 @@
 # ChangeLog for cqfd
 
+* The `.cqfdrc` file is now searched in the parent directory hierarchy if not
+  found in the current one.
 * Containers are now named `cqfd_%user_%company_%project` instead of
   `cqfd_%company_%project`. This prevents collisions with Docker when
   several users are using it on the same machine.

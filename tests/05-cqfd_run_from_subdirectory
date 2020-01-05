@@ -1,0 +1,32 @@
+#!/bin/bash
+
+. $(dirname $0)/jtest.inc "$1"
+cqfd="$TDIR/.cqfd/cqfd"
+
+jtest_prepare "cqfd can run from a project's sub-directory"
+
+set -x
+
+cd $TDIR/
+
+# Create and enter a dummy sub-directory tree
+orig_dir="$PWD"
+sub_dir="aaa/b/c/d/e"
+mkdir -p "$sub_dir"
+cd "$sub_dir"
+
+# the two paths should be identical
+p1=$(pwd)
+p2=$($cqfd run pwd)
+
+if [ "$p1" = "$p2" ]; then
+	jtest_result pass
+else
+	jtest_result fail
+fi
+
+# cleanup
+cd "$orig_dir"
+rm -rf aaa
+
+set +x
